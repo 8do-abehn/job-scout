@@ -1,0 +1,157 @@
+# Job Searchoor Configuration
+# Copy this file to config.yaml and customize for your search
+#
+# Usage:
+#   cp config.yaml.example config.yaml
+#   # Edit config.yaml with your preferences
+#   # config.yaml is gitignored - your settings stay private
+
+settings:
+  # Job sites to scrape (available: indeed, linkedin, glassdoor, zip_recruiter, google)
+  sites:
+    - indeed
+    - linkedin
+    - glassdoor
+    - zip_recruiter
+    - google
+
+  # Only return jobs posted within this many hours
+  hours_old: 72
+
+  # Max results per search
+  results_wanted: 50
+
+  # Country for Indeed searches
+  country_indeed: "USA"
+
+  # Fetch full LinkedIn descriptions (slower but more detail)
+  linkedin_fetch_description: false
+
+  # USAJOBS API (federal government jobs)
+  # Get free API key at: https://developer.usajobs.gov/apirequest/
+  # Recommended: Use env vars USAJOBS_API_KEY and USAJOBS_EMAIL instead
+  # usajobs_api_key: "your-api-key-here"
+  # usajobs_email: "your-email@example.com"
+
+# Locations to search
+# The /search-all endpoint runs against all locations
+# The /get-jobs endpoint uses the first matching or request params
+locations:
+  - name: remote
+    is_remote: true
+
+  # Example: Add your local areas
+  # - name: new_york
+  #   location: "New York, NY"
+  #   distance: 25  # miles
+
+  # - name: san_francisco
+  #   location: "San Francisco, CA"
+  #   distance: 50
+
+  # - name: chicago
+  #   location: "Chicago, IL"
+  #   distance: 30
+
+# Search queries to run
+# Use Indeed query syntax: "exact phrase", OR, -exclude
+searches:
+  - name: default
+    search_term: "software engineer"
+    priority: 1
+
+  # Add more targeted searches:
+  # - name: infra_manager
+  #   search_term: '"infrastructure manager" OR "IT director" -developer'
+  #   priority: 1
+  #
+  # - name: senior_engineer
+  #   search_term: '"senior engineer" (infrastructure OR systems) -frontend'
+  #   priority: 2
+
+# Keywords to filter OUT of results (case-insensitive, matches job TITLE only)
+exclude_keywords: []
+  # - "python developer"
+  # - "frontend"
+  # - "full stack"
+
+# Keywords to BOOST in results (increases score for ranking)
+# Jobs are automatically scored and sorted by fit based on:
+#   - Role type (manager/director titles, infrastructure focus)
+#   - Industry match (healthcare, financial, government, etc.)
+#   - Location preferences (remote, configured cities)
+#   - Skills match (from include_keywords below)
+#   - Red flags (contract-to-hire, wrong tech stack, etc.)
+include_keywords: []
+  # - "infrastructure"
+  # - "terraform"
+  # - "vmware"
+  # - "remote"
+
+# Scoring preferences
+# Customize how jobs are ranked. All lists are case-insensitive and matched
+# against job title, description, location, or company name as appropriate.
+# If omitted, sensible defaults are used (see backend/main.py).
+scoring:
+  # Locations to boost (+10 score each)
+  good_locations:
+    - "remote"
+    # - "new york"
+    # - "san francisco"
+    # - "chicago"
+    # - "austin"
+
+  # Skills that boost a job's score (+5 each when found in description)
+  good_skills:
+    - "terraform"
+    - "ansible"
+    - "kubernetes"
+    - "docker"
+    - "aws"
+    - "azure"
+    - "gcp"
+
+  # Red flag keywords that lower score (-10 each)
+  red_flags:
+    - "contract to hire"
+    - "c2h"
+
+  # Uncomment and customize to override default title matching:
+  # mgmt_titles:
+  #   - "manager"
+  #   - "director"
+  #   - "head of"
+  #   - "vp "
+  #   - "vice president"
+  #
+  # senior_ic_titles:
+  #   - "senior"
+  #   - "lead"
+  #   - "principal"
+  #   - "staff"
+  #
+  # preferred_titles — roles you're targeting (+15 score boost)
+  # Empty by default; add your own target roles:
+  # preferred_titles:
+  #   - "infrastructure"
+  #   - "devops"
+  #   - "sre"
+  #   - "platform engineer"
+  #   - "cloud engineer"
+  #
+  # bad_titles:
+  #   - "developer"
+  #   - "product manager"
+  #   - "data engineer"
+  #   - "marketing"
+  #
+  # large_companies:
+  #   - "amazon"
+  #   - "google"
+  #   - "microsoft"
+  #   - "accenture"
+
+# Google Jobs requires different syntax - optional separate searches
+# google_searches:
+#   - "software engineer jobs near New York, NY"
+#   - "product manager remote jobs USA"
