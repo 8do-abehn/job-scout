@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  smoke-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          cd backend
+          pip install -r requirements.txt
+
+      - name: Start backend and verify health
+        run: |
+          cd backend
+          python main.py &
+          SERVER_PID=$!
+
+          # Wait for server to start (max 30s)
+          for i in {1..30}; do
+            if curl -s http://localhost:8000/health > /dev/null 2>&1; then
+              echo "Server started successfully"
+              break
+            fi
+            sleep 1
+          done
+
+          # Verify health endpoint
+          HEALTH=$(curl -s http://localhost:8000/health)
+          echo "Health response: $HEALTH"
+
+          if echo "$HEALTH" | grep -q '"status":"ok"'; then
+            echo "✓ Health check passed"
+          else
+            echo "✗ Health check failed"
+            kill $SERVER_PID 2>/dev/null || true
+            exit 1
+          fi
+
+          kill $SERVER_PID 2>/dev/null || true
+        env:
+          JOBSPY_VERBOSE: '0'

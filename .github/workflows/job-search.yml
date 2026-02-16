@@ -1,0 +1,59 @@
+name: Job Search
+
+on:
+  # Run daily at 8am UTC
+  schedule:
+    - cron: '0 8 * * *'
+  # Allow manual trigger (uses same settings as scheduled)
+  workflow_dispatch:
+
+env:
+  # Default search terms for scheduled runs (comma-separated)
+  DEFAULT_SEARCHES: ${{ vars.JOB_SEARCHES || 'software engineer,product manager,data analyst' }}
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  search:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          cd backend
+          pip install -r requirements.txt
+
+      - name: Start backend
+        run: |
+          cd backend
+          python main.py &
+          sleep 5
+          curl -s http://localhost:8000/health
+        env:
+          JOBSPY_VERBOSE: '1'
+          JOBSPY_SITES: ${{ vars.JOBSPY_SITES || 'indeed,linkedin,glassdoor,zip_recruiter,google' }}
+          JOBSPY_LINKEDIN_FULL: ${{ vars.JOBSPY_LINKEDIN_FULL || 'true' }}
+
+      - name: Run searches
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          chmod +x scripts/search-and-track.sh
+
+          # Run each configured search
+          IFS=',' read -ra SEARCHES <<< "$DEFAULT_SEARCHES"
+          for search in "${SEARCHES[@]}"; do
+            echo "Searching: $search"
+            ./scripts/search-and-track.sh "$search" --remote --limit 10 || true
+            sleep 5
+          done
