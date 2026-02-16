@@ -1,0 +1,10 @@
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    environment:
+      - JOBSPY_VERBOSE=1           # 0=errors, 1=warnings, 2=all
+      - JOBSPY_LINKEDIN_FULL=true # true for full descriptions (slower)
+      - JOBSPY_SITES=indeed,linkedin,glassdoor,zip_recruiter

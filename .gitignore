@@ -32,3 +32,13 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 
 # Finder (MacOS) folder config
 .DS_Store
+
+# Personal/PII - do not commit
+job-hunting-context/
+files.zip
+config.yaml
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
