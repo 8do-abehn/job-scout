@@ -1,5 +1,5 @@
 {
-  "name": "job-searchoor",
+  "name": "job-scout",
   "version": "0.1.5",
   "description": "A tool to search for jobs",
   "module": "index.ts",
@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/0xDAEF0F/job-searchoor"
+    "url": "https://github.com/8do-abehn/job-scout"
   },
   "author": "alex t. <aletapia@proton.me>",
   "license": "MIT",
@@ -21,7 +21,7 @@
     "FastMCP"
   ],
   "bin": {
-    "job-searchoor": "dist/index.js"
+    "job-scout": "dist/index.js"
   },
   "devDependencies": {
     "@types/bun": "latest",
